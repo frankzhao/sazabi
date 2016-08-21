@@ -1,0 +1,6 @@
+#! python
+from sazabi import Sazabi
+
+if __name__ == '__main__':
+    sazabi = Sazabi()
+    sazabi.launch()

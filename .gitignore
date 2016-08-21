@@ -1,0 +1,4 @@
+*.pyc
+config.yaml
+*egg-info*
+.idea

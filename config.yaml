@@ -1,0 +1,12 @@
+discord:
+    client: "CLIENT ID"
+    secret: "CLIENT SECRET"
+    token: "AUTH TOKEN"
+imgur:
+    client_id: 'CLIENT ID'
+    client_token: 'TOKEN'
+plugins:
+    - "cat"
+    - "imgur"
+    - "joke"
+    - "text"
