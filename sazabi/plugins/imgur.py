@@ -20,7 +20,7 @@ class Imgur(SazabiBotPlugin):
             memes = imgur_client.memes_subgallery(sort='viral', page=0, window='week')
             pic = choice(memes).link
         elif message.content == "~robot":
-            keyword = choice(['gundam', 'robot', 'mecha'])
+            keyword = choice(['gundam', 'mecha'])
 
             self.logger.debug('Processing robot command')
 

@@ -42,6 +42,10 @@ class Sazabi(LoggedObject):
             self._imgur_config.get('client_token'),
         )
 
+    @property
+    def _weather_config(self):
+        return self._config.get('weather')
+
     def _configure_plugins(self):
         if self._plugins is None:
             plugin_config = [
@@ -62,7 +66,7 @@ class Sazabi(LoggedObject):
     async def on_message(self, message):
         for plugin in self._plugins:  # type SazabiBotPlugin
             kwargs = {
+                'config': self._config,
                 'imgur': self.imgur_client,
-                'config': self._config
             }
             await plugin.parse(client, message, **kwargs)
