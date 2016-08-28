@@ -3,10 +3,13 @@ discord:
     secret: "CLIENT SECRET"
     token: "AUTH TOKEN"
 imgur:
-    client_id: 'CLIENT ID'
-    client_token: 'TOKEN'
+    client_id: "CLIENT ID"
+    client_token: "TOKEN"
+weather:
+    api_key: "API_KEY"
 plugins:
     - "cat"
     - "imgur"
     - "joke"
     - "text"
+    = "weather"
