@@ -5,8 +5,6 @@ discord:
 imgur:
     client_id: "CLIENT ID"
     client_token: "TOKEN"
-weather:
-    api_key: "API_KEY"
 plugins:
     - "cat"
     - "imgur"
