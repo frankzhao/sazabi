@@ -73,6 +73,7 @@ class Weather(SazabiBotPlugin):
             'mostly cloudy': ':cloud:',
             'partly cloudy (night)': ':cloud:',
             'partly cloudy (day)': ':cloud:',
+            'mostly clear': ':white_sun_small_cloud:',
             'clear (night)': ':full_moon:',
             'sunny': ':sunny:',
             'fair (night)': ':white_sun_small_cloud:',
@@ -124,7 +125,7 @@ class Weather(SazabiBotPlugin):
                       '*Wind: {wind_speed}m/s*'.format(
                     city=weather.get('location').get('city'),
                     country=weather.get('location').get('country'),
-                    emoji=emoji,
+                    emoji=emoji if emoji else '',
                     temperature=(float(weather.get('item').get('condition').get('temp')) - 32) * (5 / 9),   # F to C
                     weather=weather.get('item').get('condition').get('text').title(),
                     humidity=weather.get('atmosphere').get('humidity'),
