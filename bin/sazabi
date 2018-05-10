@@ -1,6 +1,9 @@
 #! python
+
 from sazabi import Sazabi
+from sazabi.util import create_session
+
 
 if __name__ == '__main__':
-    sazabi = Sazabi()
-    sazabi.launch()
+  sazabi = Sazabi(create_session(), config='prod_config.yaml')
+  sazabi.launch()

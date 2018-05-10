@@ -5,6 +5,8 @@ discord:
 imgur:
     client_id: "CLIENT ID"
     client_token: "TOKEN"
+twitch:
+    client_id: "CLIENT ID"
 plugins:
     - "cat"
     - "imgur"

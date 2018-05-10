@@ -1,4 +1,6 @@
 *.pyc
-config.yaml
+prod_config.yaml
 *egg-info*
 .idea
+*.iml
+*.log
