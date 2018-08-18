@@ -68,7 +68,6 @@ class Sazabi(LoggedObject):
     # client.run(self._config.get('discord').get('token'))
     main_thread = threading.Thread(target=client.run, args=[self._config.get('discord').get('token')])
     main_thread.start()
-    # self.session.query(Channel).all()
 
     f_stop = threading.Event()
 
