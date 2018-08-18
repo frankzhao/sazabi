@@ -18,7 +18,7 @@ class Sazabi(LoggedObject):
     self.session = session  # type: sqlalchemy.orm.session.Session
     self.logger.setLevel(logging.INFO)
     self._config = self._read_config(config)
-    # self.imgur_client = self._imgur_client()
+    self.imgur_client = self._imgur_client()
     self._plugins = None
     self._configure_plugins()
 
@@ -65,25 +65,34 @@ class Sazabi(LoggedObject):
 
   def launch(self):
     self.logger.info("Launching...")
-    # client.run(self._config.get('discord').get('token'))
-    main_thread = threading.Thread(target=client.run, args=[self._config.get('discord').get('token')])
-    main_thread.start()
-
     f_stop = threading.Event()
+    loop = asyncio.get_event_loop()
 
-    # start calling f now and every 60 sec thereafter
-    self.background_tasks(f_stop)
+    try:
+      tasks = [client.start(self._config.get('discord').get('token')),
+               self.background_tasks(f_stop)]
+      gathered = asyncio.gather(*tasks, loop=loop)
+      loop.run_until_complete(gathered)
+    except KeyboardInterrupt:
+      loop.run_until_complete(client.logout())
+      pending = asyncio.Task.all_tasks(loop=loop)
+      gathered = asyncio.gather(*pending, loop=loop)
+      try:
+        gathered.cancel()
+        loop.run_until_complete(gathered)
 
-    # stop the thread when needed
-    # f_stop.set()
+        gathered.exception()
+      except:
+        pass
+    finally:
+      loop.close()
 
-  def background_tasks(self, f_stop):
-    self.logger.info('Looking for stream updates...')
+  async def background_tasks(self, f_stop):
     twitch = Twitch()
-    twitch.parse(client, None, None, **self._twitch_config)
-
-    if not f_stop.is_set():
-      threading.Timer(self._twitch_config.get('interval'), self.background_tasks, [f_stop]).start()
+    while True:
+      self.logger.info('Looking for stream updates...')
+      await twitch.parse(client, None, None, **self._twitch_config)
+      await asyncio.sleep(self._twitch_config.get('interval'))
 
   @asyncio.coroutine
   async def on_ready(self):

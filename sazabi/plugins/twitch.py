@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 from datetime import datetime
 
 import requests
@@ -10,7 +11,7 @@ from sazabi.util import create_session
 
 
 class Twitch(SazabiBotPlugin):
-  def parse(self, client, message, *args, **kwargs):
+  async def parse(self, client, message, *args, **kwargs):
     session = create_session()  # type: sqlalchemy.orm.session.Session
     client_id = kwargs.get('client_id')
 
@@ -33,24 +34,32 @@ class Twitch(SazabiBotPlugin):
           if not channel.live:
             # became live
             notify = True
-          self.logger.info('Stream {} is live'.format(user_login))
+          self.logger.debug('Stream {} is live'.format(user_login))
           channel.live = True
         else:
           channel.live = False
-          self.logger.info('Stream {} is offline'.format(user_login))
+          self.logger.debug('Stream {} is offline'.format(user_login))
         channel.last_updated = datetime.now()
-        session.commit()
 
         if notify:
-          asyncio.new_event_loop().run_until_complete(self.send_update(client, channel.channel_name))
+          channel.last_change = datetime.now()
+          self.logger.info('Send update, {} went live'.format(channel.channel_name))
+          await self.send_update(client, channel.channel_name)
+        else:
+          self.logger.info('No stream changes')
+        session.commit()
 
       else:
         self.logger.error(
-          "Could not connect to twitch: {}".format(response.status_code))
+          "Could not connect to twitch: {}, {}".format(response.status_code, response.text))
 
   async def send_update(self, client, stream_name):
     channels = [c for c in client.get_all_channels() if 'general' in c.name.lower()]
     for c in channels:
-      await client.send_message(
-          c, 'Stream {} went online! https://twitch.tv/{}'.format(
-              stream_name, stream_name))
+      message = 'Stream {} went online! https://twitch.tv/{}'.format(stream_name, stream_name)
+      await self.send_message_wrapper(client, c, message)
+      self.logger.info("Send update done")
+
+  async def send_message_wrapper(self, client, channel, message):
+    self.logger.info("Sending message: {}".format(message))
+    await client.send_message(channel, message)

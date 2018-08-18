@@ -24,7 +24,8 @@ def upgrade():
       sa.Column('channel_name', sa.String, nullable=False),
       sa.Column('channel_url', sa.String, nullable=False),
       sa.Column('live', sa.Boolean, nullable=False, default=False),
-      sa.Column('last_updated', sa.DateTime, nullable=True)
+      sa.Column('last_updated', sa.DateTime, nullable=True),
+      sa.Column('last_change', sa.DateTime, nullable=True)
   )
 
 

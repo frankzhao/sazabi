@@ -16,12 +16,14 @@ class Channel(Base):
   channel_url = Column(String)
   live = Column(Boolean)
   last_updated = Column(DateTime)
+  last_change = Column(DateTime)
 
   def __init__(self, id=None, channel_name=None, channel_url=None, live=False,
-      last_updated=None):
+      last_updated=None, last_change=None):
     self.id = id
     self.channel_name = channel_name
     self.channel_url = channel_url
     self.live = live
     self.last_updated = last_updated
+    self.last_change = last_change
 
