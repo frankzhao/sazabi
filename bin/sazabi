@@ -1,9 +1,15 @@
 #! python
 
+from argparse import ArgumentParser
 from sazabi import Sazabi
 from sazabi.util import create_session
 
 
 if __name__ == '__main__':
-  sazabi = Sazabi(create_session(), config='prod_config.yaml')
+
+  parser = ArgumentParser("Sazabi discord bot")
+  parser.add_argument('-c', '--config', dest='configfile',
+                      help='Configuration YAML file', default='config.yaml')
+  args = parser.parse_args()
+  sazabi = Sazabi(create_session(), config=args.configfile)
   sazabi.launch()
