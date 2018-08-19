@@ -1,4 +1,5 @@
 import logging
+import os
 
 from abc import abstractmethod
 
@@ -10,7 +11,7 @@ class LoggedObject(object):
         fmt='%(asctime)s %(levelname)-8s %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S')
     logger = logging.getLogger(__name__)
-    handler = logging.FileHandler("sazabi.log")
+    handler = logging.FileHandler(os.getenv("SAZABI_LOG", "/var/log/sazabi.log"))
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger

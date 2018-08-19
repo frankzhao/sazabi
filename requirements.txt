@@ -5,3 +5,4 @@ pyyaml
 imgurpython
 sqlalchemy
 psycopg2
+alembic

@@ -1,4 +1,5 @@
 FROM centos:7
+LABEL maintainer="frank@frankzhao.net"
 
 ENV REPOSITORY=https://github.com/frankzhao/sazabi
 ENV INSTALLDIR=/usr/local/bin/sazabi
@@ -15,9 +16,9 @@ RUN git clone $REPOSITORY $INSTALLDIR
 
 WORKDIR $INSTALLDIR
 
-RUN mkdir -p $CONFIGDIR
+RUN mkdir -p $CONFIGDIR && touch $CONFIGDIR/$CONFIGFILE && chmod 750 $CONFIGDIR/$CONFIGFILE
 RUN git checkout twitch && git pull origin twitch
-RUN pip3.6 install -r requirements.txt
-RUN pip3.6 install -e .
+RUN pip3.6 install -r requirements.txt && pip3.6 install -e .
+RUN alembic upgrade head
 
 ENTRYPOINT python3.6 $DAEMON -c $CONFIGDIR/$CONFIGFILE
