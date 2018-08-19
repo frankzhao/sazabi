@@ -2,5 +2,6 @@
 prod_config.yaml
 *egg-info*
 .idea
-*.iml
 *.log
+*.iml
+prod_config.yaml
