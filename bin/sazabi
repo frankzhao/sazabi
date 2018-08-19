@@ -1,5 +1,7 @@
 #! python
 
+import logging
+
 from argparse import ArgumentParser
 from sazabi import Sazabi
 from sazabi.util import create_session
@@ -10,6 +12,12 @@ if __name__ == '__main__':
   parser = ArgumentParser("Sazabi discord bot")
   parser.add_argument('-c', '--config', dest='configfile',
                       help='Configuration YAML file', default='config.yaml')
+  parser.add_argument('-l', '--log', dest='logfile',
+                      help='Logging destination file', default='/var/log/sazabi/sazabi.log')
   args = parser.parse_args()
+
+  logging.basicConfig(filename=args.logfile, level=logging.INFO,
+                      format='%(asctime)s %(levelname)s %(name)s %(message)s')
+
   sazabi = Sazabi(create_session(), config=args.configfile)
   sazabi.launch()
