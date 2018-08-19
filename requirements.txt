@@ -1,3 +1,4 @@
+argparse
 discord.py
 requests
 pyyaml
