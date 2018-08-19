@@ -20,6 +20,8 @@ def representable(cls):
 
 def create_session():
   engine = create_engine(
-      'postgresql+psycopg2://sazabi:sazabi@localhost:5432/sazabi', echo=False)
+      'postgresql+psycopg2://sazabi:sazabi@localhost:5432/sazabi', echo=False,
+      pool_size=5, max_overflow=0
+  )
   Session = sessionmaker(bind=engine)
   return Session()  # type: sqlalchemy.orm.session.Session

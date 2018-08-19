@@ -53,6 +53,9 @@ class Twitch(SazabiBotPlugin):
         self.logger.error(
           "Could not connect to twitch: {}, {}".format(response.status_code, response.text))
 
+    # close the session
+    session.close()
+
   async def send_update(self, client, stream_name):
     channels = [c for c in client.get_all_channels() if 'general' in c.name.lower()]
     for c in channels:
