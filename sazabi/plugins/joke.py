@@ -7,7 +7,9 @@ from sazabi.types import SazabiBotPlugin
 class Joke(SazabiBotPlugin):
     async def parse(self, client, message, *args, **kwargs):
         if message.content == "~joke":
-            response = requests.get('https://www.reddit.com/r/oneliners/new.json').json()
+            response = requests.get(
+                'https://www.reddit.com/r/oneliners/new.json',
+                headers={'User-agent': 'sazabi-bot'}).json()
             if response is not None:
                 try:
                     response = choice(response.get('data').get('children'))
