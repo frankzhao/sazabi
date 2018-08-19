@@ -3,3 +3,5 @@ discord.py
 requests
 pyyaml
 imgurpython
+sqlalchemy
+psycopg2
