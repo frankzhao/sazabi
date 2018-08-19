@@ -5,6 +5,7 @@ ENV REPOSITORY=https://github.com/frankzhao/sazabi
 ENV INSTALLDIR=/usr/local/bin/sazabi
 ENV CONFIGDIR=/etc/sazabi
 ENV CONFIGFILE=config.yaml
+ENV LOGFILE=/var/log/sazabi.log
 ENV DAEMON=bin/sazabi
 
 RUN yum install -y https://centos7.iuscommunity.org/ius-release.rpm \
@@ -20,4 +21,4 @@ RUN mkdir -p $CONFIGDIR && touch $CONFIGDIR/$CONFIGFILE && chmod 750 $CONFIGDIR/
 RUN git checkout twitch && git pull origin twitch
 RUN pip3.6 install -r requirements.txt && pip3.6 install -e .
 
-ENTRYPOINT python3.6 $DAEMON -c $CONFIGDIR/$CONFIGFILE
+ENTRYPOINT python3.6 $DAEMON -c $CONFIGDIR/$CONFIGFILE -l $LOGFILE
