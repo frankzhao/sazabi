@@ -1,9 +1,8 @@
-import asyncio
 import json
-import time
 from datetime import datetime
 
 import requests
+from discord.errors import HTTPException
 
 from sazabi.model import Channel
 from sazabi.types import SazabiBotPlugin
@@ -27,7 +26,7 @@ class Twitch(SazabiBotPlugin):
 
         # update status
         channel = session.query(Channel).filter(
-          Channel.channel_name == user_login).first()
+            Channel.channel_name == user_login).first()
 
         notify = False  # send a message update when going online
         if len(streams) > 0:
@@ -43,7 +42,8 @@ class Twitch(SazabiBotPlugin):
 
         if notify:
           channel.last_change = datetime.now()
-          self.logger.info('Send update, {} went live'.format(channel.channel_name))
+          self.logger.info(
+            'Send update, {} went live'.format(channel.channel_name))
           await self.send_update(client, channel.channel_name)
         else:
           self.logger.info('No stream changes')
@@ -51,18 +51,25 @@ class Twitch(SazabiBotPlugin):
 
       else:
         self.logger.error(
-          "Could not connect to twitch: {}, {}".format(response.status_code, response.text))
+            "Could not connect to twitch: {}, {}".format(response.status_code,
+                                                         response.text))
 
     # close the session
     session.close()
 
   async def send_update(self, client, stream_name):
-    channels = [c for c in client.get_all_channels() if 'general' in c.name.lower()]
+    channels = [c for c in client.get_all_channels() if
+                'general' in c.name.lower()]
     for c in channels:
-      message = 'Stream {} went online! https://twitch.tv/{}'.format(stream_name, stream_name)
+      self.logger.info("Sending update to channel #{}".format("c.name"))
+      message = 'Stream {} went online! https://twitch.tv/{}'.format(
+        stream_name, stream_name)
       await self.send_message_wrapper(client, c, message)
-      self.logger.info("Send update done")
 
   async def send_message_wrapper(self, client, channel, message):
     self.logger.info("Sending message: {}".format(message))
-    await client.send_message(channel, message)
+    try:
+      await client.send_message(channel, message)
+    except HTTPException as e:
+      self.logger.error(
+        "Unable to send to channel #{}: {}".format(channel.name, e.text))
