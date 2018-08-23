@@ -4,6 +4,7 @@ import threading
 
 import discord
 import imgurpython
+import twython
 import yaml
 
 from sazabi.model import Channel
@@ -19,6 +20,7 @@ class Sazabi(LoggedObject):
     self.logger.setLevel(logging.INFO)
     self._config = self._read_config(config)
     self.imgur_client = self._imgur_client()
+    self.twitter_client = self._twitter_client()
     self._plugins = None
     self._configure_plugins()
 
@@ -44,10 +46,26 @@ class Sazabi(LoggedObject):
   def _twitch_config(self):
     return self._config.get('twitch')
 
+  @property
+  def _twitter_config(self):
+    return self._config.get('twitter')
+
   def _imgur_client(self):
     return imgurpython.ImgurClient(
         self._imgur_config.get('client_id'),
         self._imgur_config.get('client_token'),
+    )
+
+  def _twitter_client(self):
+    twitter = twython.Twython(
+        self._twitter_config.get('consumer_key'),
+        self._twitter_config.get('consumer_secret'),
+        oauth_version=2
+    )
+    ACCESS_TOKEN = twitter.obtain_access_token()
+    return twython.Twython(
+      self._twitter_config.get('consumer_key'), 
+      access_token=ACCESS_TOKEN
     )
 
   @property
@@ -105,5 +123,6 @@ class Sazabi(LoggedObject):
       kwargs = {
         'config': self._config,
         'imgur': self.imgur_client,
+        'twitter': self.twitter_client
       }
       await plugin.parse(client, message, **kwargs)

@@ -7,9 +7,15 @@ imgur:
     client_token: "TOKEN"
 twitch:
     client_id: "CLIENT ID"
+    interval: 5
+twitter:
+    consumer_key: "CONSUMER_KEY"
+    consumer_secret: "CONSUMER_SECRET"
 plugins:
     - "cat"
     - "imgur"
     - "joke"
     - "text"
     - "weather"
+    - "twitch"
+    - "twitter"
