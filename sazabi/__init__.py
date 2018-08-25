@@ -19,8 +19,8 @@ class Sazabi(LoggedObject):
     self.session = session  # type: sqlalchemy.orm.session.Session
     self.logger.setLevel(logging.INFO)
     self._config = self._read_config(config)
-    self.imgur_client = self._imgur_client()
-    self.twitter_client = self._twitter_client()
+    self.imgur_client = self._imgur_client() if 'imgur' in self._enabled_plugins else None
+    self.twitter_client = self._twitter_client() if 'twitter' in self._enabled_plugins else None
     self._plugins = None
     self._configure_plugins()
 
@@ -50,23 +50,35 @@ class Sazabi(LoggedObject):
   def _twitter_config(self):
     return self._config.get('twitter')
 
+  @property
+  def _enabled_plugins(self):
+    return self._config.get('plugins')
+
   def _imgur_client(self):
-    return imgurpython.ImgurClient(
-        self._imgur_config.get('client_id'),
-        self._imgur_config.get('client_token'),
-    )
+    try:
+      return imgurpython.ImgurClient(
+          self._imgur_config.get('client_id'),
+          self._imgur_config.get('client_token'),
+      )
+    except AttributeError:
+      self.logger.error(
+          "Client id and token for imgur plugin must be specified. Imgur plugin disabled!")
 
   def _twitter_client(self):
-    twitter = twython.Twython(
-        self._twitter_config.get('consumer_key'),
-        self._twitter_config.get('consumer_secret'),
-        oauth_version=2
-    )
-    ACCESS_TOKEN = twitter.obtain_access_token()
-    return twython.Twython(
-      self._twitter_config.get('consumer_key'), 
-      access_token=ACCESS_TOKEN
-    )
+    try:
+      twitter = twython.Twython(
+          self._twitter_config.get('consumer_key'),
+          self._twitter_config.get('consumer_secret'),
+          oauth_version=2
+      )
+      ACCESS_TOKEN = twitter.obtain_access_token()
+      return twython.Twython(
+          self._twitter_config.get('consumer_key'),
+          access_token=ACCESS_TOKEN
+      )
+    except AttributeError:
+      self.logger.error(
+        "Consumer key and secret for twitter plugin must be specified. Twitter plugin disabled!")
 
   @property
   def _weather_config(self):
