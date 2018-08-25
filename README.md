@@ -15,6 +15,7 @@ python bin/sazabi -c config.yaml
 * twitch: Watches streams and notifies when they become online.
   (Requires postgres)
 * weather: Weather for specified location
+* twitter: Load extra images from a tweet
 
 ## Setup
 1.  Create database and user for sazabi. Configure alembic.ini with database details
@@ -42,11 +43,14 @@ imgur:
 twitch:
     client_id: "CLIENT ID"
     interval: 60
+twitter:
+    consumer_key: "CONSUMER_KEY"
+    consumer_secret: "CONSUMER_SECRET"
 plugins:
     - "cat"
     - "imgur"
     - "joke"
     - "text"
     - "weather"
-
+    - "twitter"
 ```
