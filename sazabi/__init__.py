@@ -7,7 +7,6 @@ import imgurpython
 import twython
 import yaml
 
-from sazabi.model import Channel
 from sazabi.plugins.twitch import Twitch
 from sazabi.types import SazabiBotPlugin, LoggedObject
 
@@ -78,7 +77,7 @@ class Sazabi(LoggedObject):
       )
     except AttributeError:
       self.logger.error(
-        "Consumer key and secret for twitter plugin must be specified. Twitter plugin disabled!")
+          "Consumer key and secret for twitter plugin must be specified. Twitter plugin disabled!")
 
   @property
   def _weather_config(self):
@@ -103,6 +102,9 @@ class Sazabi(LoggedObject):
                self.background_tasks(f_stop)]
       gathered = asyncio.gather(*tasks, loop=loop)
       loop.run_until_complete(gathered)
+    except RuntimeError as e:
+      self.logger.error("Received fatal error: {}".format(e))
+      self._handle_exit()
     except KeyboardInterrupt:
       loop.run_until_complete(client.logout())
       pending = asyncio.Task.all_tasks(loop=loop)
@@ -114,8 +116,27 @@ class Sazabi(LoggedObject):
         gathered.exception()
       except:
         pass
-    finally:
-      loop.close()
+      finally:
+        loop.close()
+
+  def _handle_exit(self):
+    self.logger.error("Handing fatal error, restarting...")
+    client.loop.run_until_complete(client.logout())
+    for t in asyncio.Task.all_tasks(loop=client.loop):
+      if t.done():
+        t.exception()
+        continue
+      t.cancel()
+      try:
+        client.loop.run_until_complete(asyncio.wait_for(t, 5, loop=client.loop))
+        t.exception()
+      except asyncio.InvalidStateError:
+        pass
+      except asyncio.TimeoutError:
+        pass
+      except asyncio.CancelledError:
+        pass
+    self.launch()  # TODO may cause stack overflow
 
   async def background_tasks(self, f_stop):
     twitch = Twitch()
@@ -131,6 +152,7 @@ class Sazabi(LoggedObject):
 
   @asyncio.coroutine
   async def on_message(self, message):
+    self.logger.info("Got message: User: {}, Message: {}".format(message.author.name, message.content))
     for plugin in self._plugins:  # type SazabiBotPlugin
       kwargs = {
         'config': self._config,

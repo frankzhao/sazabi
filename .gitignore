@@ -4,4 +4,3 @@ prod_config.yaml
 .idea
 *.log
 *.iml
-prod_config.yaml
