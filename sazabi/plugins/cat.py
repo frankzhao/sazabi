@@ -1,5 +1,6 @@
 import requests
 from random import choice
+from urllib.parse import quote as urlquote
 
 from sazabi.types import SazabiBotPlugin
 
@@ -16,4 +17,7 @@ class Cat(SazabiBotPlugin):
                 cat = requests.get(cat_url).json().get('file')
 
             if cat:
+                # Encode URL
+                cat = cat.replace('https://', '')
+                cat = 'https://' + urlquote(cat)
                 await client.send_message(message.channel, cat)
